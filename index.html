@@ -58,8 +58,11 @@ aside button[aria-current="true"] { border-left: 3px solid var(--violet); }
 aside[hidden]{display:none}
 .access-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 @media(max-width:680px){.access-grid{grid-template-columns:1fr}}
+progress{width:min(100%,24rem);accent-color:var(--plum)}
+button[aria-pressed="true"]{border-color:var(--plum);background:#eee3f0}
+button:disabled{opacity:.55;cursor:default}
 </style>
-<header><div><div class="brand"><img src="logo.png" alt="Logotipo de ASEDEM"><div><strong>Escuela Asedem</strong><small>Asociación Española de Educación Emocional</small></div></div><nav aria-label="Espacios"><button id="member-access" data-page="acceso">Mi ASEDEM</button><button data-page="campus">Escuela y campus</button></nav></div></header>
+<header><div><div class="brand"><img src="logo.png" alt="Logotipo de ASEDEM"><div><strong>Escuela Asedem</strong><small>Asociación Española de Educación Emocional</small></div></div><nav aria-label="Espacios"><button id="member-access" data-page="acceso">Mi ASEDEM</button><button data-page="campus">Mi campus</button></nav></div></header>
 <div class="layout"><aside><small>ESPACIO DE SOCIAS Y SOCIOS</small><nav aria-label="Mi ASEDEM"><button data-page="directorio">Directorio profesional</button><button data-page="grupos">Grupos y territorios</button><button data-page="iniciativas">Iniciativas</button><button data-page="perfil">Mi perfil</button><button data-page="socios">Mi cuota anual</button><button data-page="mi-campus">Mi campus</button><button data-demo-logout>Cerrar sesión de demo</button></nav></aside><main id="main"></main></div>
 <dialog id="modal"></dialog>
 <script>
@@ -110,7 +113,57 @@ function projectEditor(i){
 const p=projects[i];showDialog('<h2>'+esc(p.title)+'</h2>'+chip(p.status)+'<form class="stack" id="project" data-id="'+i+'">'+input('title','Título',p.title)+area('goal','Objetivo',p.goal)+select('group','Grupo temático',groups,p.group)+input('person','Persona de referencia',p.person)+input('step','Próximo paso',p.step)+input('date','Fecha prevista',p.date,'date')+area('notes','Acuerdos y materiales',p.notes)+'<button class="primary">Guardar acuerdos</button></form><div class="row section">'+(p.status==='En revisión'?button('Aprobar como coordinación (demo)','data-review="'+i+'"'):p.status==='En preparación'?button('Enviar a revisión','data-review="'+i+'"'):'')+'</div>');
 }
 function newProject(person='',group='Duelo'){showDialog('<h2>Abrir una colaboración</h2><form class="stack" id="project">'+input('title','Título')+area('goal','Objetivo')+select('group','Grupo temático',groups,group)+input('person','Persona de referencia',person)+input('step','Próximo paso')+input('date','Fecha prevista','','date')+area('notes','Acuerdos y materiales')+'<button class="primary">Crear iniciativa</button></form>')}
-function campus(){main.innerHTML=hero('Escuela y campus','Explora cómo una iniciativa de las personas socias puede convertirse en una formación.')+'<article class="panel"><h2>Acompañar el duelo en el aula</h2>'+chip('Taller de demostración')+chip('Profesorado')+'<p>Practica cómo iniciar una conversación y acordar apoyos con un alumno que ha sufrido una pérdida.</p>'+button(enrolled?'Abrir actividad':'Simular inscripción','data-enroll',true)+'</article>'+projects.filter(p=>p.status==='Aprobada'&&p.title!==sample.title).map(p=>'<article class="panel"><h3>'+esc(p.title)+'</h3>'+chip('Propuesta aprobada en la demo')+'<p>'+esc(p.goal)+'</p></article>').join('')+(enrolled?'<section class="panel" id="activity"><h2>Caso práctico</h2><p>Tras una pérdida familiar, un alumno regresa a clase. Se queda apartado durante una actividad. ¿Cómo iniciarías el acompañamiento?</p><div class="stack">'+button('Ofrecerle hablar en privado y preguntarle qué apoyo desea.','data-answer="privado"')+button('Pedirle que cuente al grupo lo ocurrido.','data-answer="grupo"')+'</div><p role="status">'+(answer==='privado'?'Una conversación privada protege su intimidad y le permite decidir qué compartir y cuándo.':answer==='grupo'?'Explicarlo ante el grupo puede hacer que se sienta expuesto. Ofrécele primero un espacio privado y escucha qué necesita.':'')+'</p><a href="pauta-aula.txt" download>Descargar pauta para el aula</a></section>':'')}
+
+const campusStages=[
+ ['Situación inicial','Tras una pérdida familiar, un alumno vuelve a clase y se queda apartado durante el trabajo en grupo. ¿Cómo puedes ofrecerle apoyo respetando su intimidad?'],
+ ['Microcontenido','Ofrece una conversación en privado, pregunta qué necesita y acuerda una forma discreta de pedir una pausa. Retomad después el acuerdo para comprobar si le ayuda.'],
+ ['Caso con decisiones','El alumno te pide que sus compañeros no sepan lo ocurrido. ¿Cómo responderías?'],
+ ['Feedback','Revisa las consecuencias de la decisión que has tomado.'],
+ ['Aplicación práctica','Escribe una frase para abrir la conversación y una medida concreta de apoyo que puedas acordar con el alumno.'],
+ ['Evaluación','Antes de cerrar el taller, comprueba que tu propuesta respeta la intimidad, incluye una medida acordada con el alumno y prevé un seguimiento.']
+];
+let studentSession=sessionStorage.getItem('asedem-campus-access')==='1';
+let study=read('duelo-progress',{step:0,seen:[],draft:'',done:false});
+function campus(){
+ const signed=demoSession||studentSession;
+ main.innerHTML=hero(signed?'Mi campus':'Acceso al campus',signed?'Consulta tu formación y retoma el taller.':'Accede a tu formación de Escuela Asedem aunque no seas socio/a.')+
+ (signed?'<article class="panel"><h2>Acompañar el duelo en el aula</h2>'+chip('Taller de demostración')+chip('Profesorado')+'<p>Aprende a iniciar una conversación y acordar apoyos cuando un alumno vuelve al aula tras una pérdida.</p><p>'+study.seen.length+' de 6 etapas completadas</p><progress max="6" value="'+study.seen.length+'" aria-label="Progreso del taller"></progress><div class="row section">'+button(study.done?'Revisar taller':'Continuar taller','data-page="taller-duelo"',true)+'</div></article>':
+ '<section class="panel"><h2>Acceso del alumnado</h2><p>Prueba el campus con una inscripción de ejemplo.</p>'+button('Entrar como alumno/a de demo','data-student-login',true)+'</section>');
+}
+function dueloPage(){
+ const i=study.step,[title,copy]=campusStages[i];
+ const details=[
+ '', '',
+ '<div class="stack">'+button('Acordar en privado qué apoyo desea','data-duelo-answer="privado" aria-pressed="'+(answer==='privado')+'"')+button('Explicar lo ocurrido al grupo para que le ayude','data-duelo-answer="grupo" aria-pressed="'+(answer==='grupo')+'"')+'</div>',
+ '<p role="status">'+(answer==='privado'?'Has protegido su intimidad y le has permitido decidir qué apoyo quiere.':answer==='grupo'?'Compartir la pérdida sin su acuerdo puede exponerle. Ofrece apoyo en privado y pregúntale qué quiere compartir.':'Vuelve al caso práctico y elige una respuesta para ver su feedback.')+'</p>',
+ '<label>Mi propuesta<textarea id="duelo-draft" rows="4">'+esc(study.draft)+'</textarea></label><p><a href="pauta-aula.txt" download>Descargar pauta para el aula</a></p>',
+ '<p role="status">'+(study.done?'Taller completado. Puedes volver a consultar las seis etapas y descargar la pauta.':'Has llegado a la última etapa.')+'</p>'
+ ];
+ main.innerHTML=hero('Acompañar el duelo en el aula','Taller de demostración · '+study.seen.length+' de 6 etapas completadas')+
+ '<nav class="row section" aria-label="Etapas del taller">'+campusStages.map(([label],n)=>button(label,'data-duelo-step="'+n+'" aria-current="'+(n===i)+'"')).join('')+'</nav>'+
+ '<section class="panel"><h2>'+title+'</h2><p>'+copy+'</p>'+details[i]+'<div class="row section">'+(i>0?button('Anterior','data-duelo-step="'+(i-1)+'"'):'')+
+ button(i===5?'Finalizar etapa':'Completar y continuar','data-duelo-next'+(i===2&&!answer?' disabled':''),true)+'</div></section>'+
+ button('Volver a Mi campus','data-page="'+(demoSession?'mi-campus':'campus')+'"');
+}
+document.addEventListener('input',e=>{
+ if(e.target.id!=='duelo-draft')return;
+ study.draft=e.target.value;write('duelo-progress',study);
+});
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-student-login],[data-duelo-step],[data-duelo-next],[data-duelo-answer]');
+ if(!b)return;
+ const d=b.dataset;
+ if('studentLogin' in d){studentSession=true;sessionStorage.setItem('asedem-campus-access','1');render('campus');return}
+ if('dueloStep' in d)study.step=Number(d.dueloStep);
+ if('dueloAnswer' in d){answer=d.dueloAnswer;write('answer',answer)}
+ if('dueloNext' in d){
+  if(!study.seen.includes(study.step))study.seen.push(study.step);
+  study.done=study.seen.length===6;
+  study.step=Math.min(5,study.step+1);
+ }
+ write('duelo-progress',study);render('taller-duelo');
+});
+
 
 let member=read('member',null), memberMessage='';
 function memberPage(){
@@ -168,10 +221,10 @@ document.addEventListener('click',e=>{
   go(login?'directorio':'acceso');
 });
 const privatePages=new Set(['directorio','grupos','iniciativas','perfil','mi-campus']);
-const pages={acceso:accessPage,'mi-campus':campus,socios:memberPage,directorio:directory,perfil:profilePage,grupos:groupPage,iniciativas:initiativePage,campus};
+const pages={acceso:accessPage,'mi-campus':campus,'taller-duelo':dueloPage,socios:memberPage,directorio:directory,perfil:profilePage,grupos:groupPage,iniciativas:initiativePage,campus};
 function render(page){
   const requested=Object.hasOwn(pages,page)?page:'acceso';
-  const key=privatePages.has(requested)&&!demoSession?'acceso':requested;
+  const key=requested==='taller-duelo'&&!studentSession&&!demoSession?'campus':privatePages.has(requested)&&!demoSession?'acceso':requested;
   document.querySelector('aside').hidden=!demoSession||key==='campus'||key==='acceso';
   document.querySelector('#member-access').dataset.page=demoSession?'directorio':'acceso';
   pages[key]();
@@ -192,8 +245,8 @@ if('project'in d){projectEditor(Number(d.project));return}
 if('group'in d){const items=projects.map((p,i)=>({p,i})).filter(({p})=>p.group===d.group);showDialog('<h2>'+esc(d.group)+'</h2><div class="stack">'+(items.length?items.map(({p,i})=>button(esc(p.title),'data-project="'+i+'"')).join(''):'<p>Aún no hay iniciativas en este grupo.</p>')+button('Proponer iniciativa','data-new-group="'+esc(d.group)+'"')+'</div>');return}
 if('newGroup'in d){newProject('',d.newGroup);return}
 if('review'in d){const i=Number(d.review),p=projects[i];p.status=p.status==='En revisión'?'Aprobada':'En revisión';write('projects',projects);render(location.hash.slice(1));projectEditor(i);return}
-if('enroll'in d){enrolled=true;write('enrolled',true);render(location.hash.slice(1));document.querySelector('#activity').scrollIntoView();return}
-if('answer'in d){answer=d.answer;write('answer',answer);render(location.hash.slice(1));document.querySelector('[data-answer="'+answer+'"]').focus()}
+
+
 });
 document.addEventListener('submit',e=>{
 const form=e.target;if(!['profile','project'].includes(form.id))return;e.preventDefault();
