@@ -55,9 +55,12 @@ aside button[aria-current="true"] { border-left: 3px solid var(--violet); }
   .hero::after { display: none; }
   aside button[aria-current="true"] { border-left: 1px solid var(--violet); }
 }
+aside[hidden]{display:none}
+.access-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:680px){.access-grid{grid-template-columns:1fr}}
 </style>
-<header><div><div class="brand"><img src="logo.png" alt="Logotipo de ASEDEM"><div><strong>Escuela Asedem</strong><small>Asociación Española de Educación Emocional</small></div></div><nav aria-label="Espacios"><button data-page="directorio">Mi ASEDEM</button><button data-page="campus">Escuela y campus</button><button data-page="socios">Hacerme socio/a</button></nav></div></header>
-<div class="layout"><aside><small>ESPACIO DE SOCIAS Y SOCIOS</small><nav aria-label="Mi ASEDEM"><button data-page="directorio">Directorio profesional</button><button data-page="grupos">Grupos y territorios</button><button data-page="iniciativas">Iniciativas</button><button data-page="perfil">Mi perfil</button><button data-page="socios">Alta y cuota anual</button></nav></aside><main id="main"></main></div>
+<header><div><div class="brand"><img src="logo.png" alt="Logotipo de ASEDEM"><div><strong>Escuela Asedem</strong><small>Asociación Española de Educación Emocional</small></div></div><nav aria-label="Espacios"><button id="member-access" data-page="acceso">Mi ASEDEM</button><button data-page="campus">Escuela y campus</button></nav></div></header>
+<div class="layout"><aside><small>ESPACIO DE SOCIAS Y SOCIOS</small><nav aria-label="Mi ASEDEM"><button data-page="directorio">Directorio profesional</button><button data-page="grupos">Grupos y territorios</button><button data-page="iniciativas">Iniciativas</button><button data-page="perfil">Mi perfil</button><button data-page="socios">Mi cuota anual</button><button data-page="mi-campus">Mi campus</button><button data-demo-logout>Cerrar sesión de demo</button></nav></aside><main id="main"></main></div>
 <dialog id="modal"></dialog>
 <script>
 const main=document.querySelector('main'), modal=document.querySelector('dialog');
@@ -147,8 +150,34 @@ document.addEventListener('click',e=>{
   }
   write('member',member);render('socios');
 });
-const pages={socios:memberPage,directorio:directory,perfil:profilePage,grupos:groupPage,iniciativas:initiativePage,campus};
-function render(page){const key=Object.hasOwn(pages,page)?page:'directorio';pages[key]();document.querySelectorAll('[data-page]').forEach(b=>b.setAttribute('aria-current',String(b.dataset.page===key)));main.insertAdjacentHTML('beforeend',footer)}
+let demoSession=sessionStorage.getItem('asedem-demo-session')==='active';
+function accessPage(){
+  main.innerHTML=hero('Acceso a Mi ASEDEM','Entra en tu área de socio o solicita el alta en la asociación.')+
+  '<div class="grid access-grid">'+
+  '<section class="panel"><h2>Ya soy socio/a</h2><p>Consulta tu perfil, tus iniciativas y el campus desde tu área de socio.</p>'+button('Iniciar sesión de demo','data-demo-login',true)+'</section>'+
+  '<section class="panel"><h2>Quiero asociarme</h2><p>Solicita el alta y consulta los pasos para abonar la cuota anual.</p>'+button('Hazte socio','data-page="socios"')+'</section></div>'+
+  '<p class="muted">Acceso simulado para probar el recorrido.</p>';
+}
+document.addEventListener('click',e=>{
+  const login=e.target.closest('[data-demo-login]');
+  const logout=e.target.closest('[data-demo-logout]');
+  if(!login&&!logout)return;
+  demoSession=Boolean(login);
+  if(login)sessionStorage.setItem('asedem-demo-session','active');
+  else sessionStorage.removeItem('asedem-demo-session');
+  go(login?'directorio':'acceso');
+});
+const privatePages=new Set(['directorio','grupos','iniciativas','perfil','mi-campus']);
+const pages={acceso:accessPage,'mi-campus':campus,socios:memberPage,directorio:directory,perfil:profilePage,grupos:groupPage,iniciativas:initiativePage,campus};
+function render(page){
+  const requested=Object.hasOwn(pages,page)?page:'acceso';
+  const key=privatePages.has(requested)&&!demoSession?'acceso':requested;
+  document.querySelector('aside').hidden=!demoSession||key==='campus'||key==='acceso';
+  document.querySelector('#member-access').dataset.page=demoSession?'directorio':'acceso';
+  pages[key]();
+  document.querySelectorAll('[data-page]').forEach(b=>b.setAttribute('aria-current',String(b.dataset.page===key)));
+  main.insertAdjacentHTML('beforeend',footer);
+}
 function go(page){if(location.hash==='#'+page)render(page);else location.hash=page}
 window.addEventListener('hashchange',()=>{render(location.hash.slice(1));window.scrollTo(0,0)});
 document.addEventListener('click',e=>{
@@ -163,8 +192,8 @@ if('project'in d){projectEditor(Number(d.project));return}
 if('group'in d){const items=projects.map((p,i)=>({p,i})).filter(({p})=>p.group===d.group);showDialog('<h2>'+esc(d.group)+'</h2><div class="stack">'+(items.length?items.map(({p,i})=>button(esc(p.title),'data-project="'+i+'"')).join(''):'<p>Aún no hay iniciativas en este grupo.</p>')+button('Proponer iniciativa','data-new-group="'+esc(d.group)+'"')+'</div>');return}
 if('newGroup'in d){newProject('',d.newGroup);return}
 if('review'in d){const i=Number(d.review),p=projects[i];p.status=p.status==='En revisión'?'Aprobada':'En revisión';write('projects',projects);render(location.hash.slice(1));projectEditor(i);return}
-if('enroll'in d){enrolled=true;write('enrolled',true);render('campus');document.querySelector('#activity').scrollIntoView();return}
-if('answer'in d){answer=d.answer;write('answer',answer);render('campus');document.querySelector('[data-answer="'+answer+'"]').focus()}
+if('enroll'in d){enrolled=true;write('enrolled',true);render(location.hash.slice(1));document.querySelector('#activity').scrollIntoView();return}
+if('answer'in d){answer=d.answer;write('answer',answer);render(location.hash.slice(1));document.querySelector('[data-answer="'+answer+'"]').focus()}
 });
 document.addEventListener('submit',e=>{
 const form=e.target;if(!['profile','project'].includes(form.id))return;e.preventDefault();
