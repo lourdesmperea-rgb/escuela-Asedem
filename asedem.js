@@ -87,21 +87,36 @@ let demoSession=sessionStorage.getItem('asedem-demo-session')==='active';
 function accessPage(){
   main.innerHTML=hero('Acceso a Mi ASEDEM','Entra en tu área de socio o solicita el alta en la asociación.')+
   '<div class="grid access-grid">'+
-  '<section class="panel"><h2>Ya soy socio/a</h2><p>Consulta tu perfil, tus iniciativas y el campus desde tu área de socio.</p>'+button('Iniciar sesión de demo','data-demo-login',true)+'</section>'+
+  '<section class="panel"><h2>Ya soy socio/a</h2><p>Consulta tu perfil, tus iniciativas y el campus desde tu área de socio.</p>'+button('Iniciar sesión','data-page="login"',true)+'</section>'+
   '<section class="panel"><h2>Quiero asociarme</h2><p>Solicita el alta y consulta los pasos para abonar la cuota anual.</p>'+button('Hazte socio','data-page="socios"')+'</section></div>'+
   '<p class="muted">Acceso simulado para probar el recorrido.</p>';
 }
+function loginPage(){
+  main.innerHTML=hero('Iniciar sesión en Mi ASEDEM','Accede a tu área privada de socia o socio.')+
+  '<section class="panel"><form id="member-login" class="stack">'+
+  '<p class="muted">Acceso de demo. Usa un correo y una contraseña ficticios.</p>'+
+  '<label>Correo electrónico<input name="email" type="email" autocomplete="username" required></label>'+
+  '<label>Contraseña<input name="password" type="password" autocomplete="current-password" required></label>'+
+  '<button class="primary" type="submit">Entrar en Mi ASEDEM</button></form>'+
+  '<p><a href="#acceso">Volver a las opciones de acceso</a></p></section>';
+}
+document.addEventListener('submit',e=>{
+  if(e.target.id!=='member-login')return;
+  e.preventDefault();
+  if(!e.target.reportValidity())return;
+  sessionStorage.setItem('asedem-demo-session','active');
+  demoSession=true;
+  go('directorio');
+});
 document.addEventListener('click',e=>{
-  const login=e.target.closest('[data-demo-login]');
-  const logout=e.target.closest('[data-demo-logout]');
-  if(!login&&!logout)return;
-  demoSession=Boolean(login);
-  if(login)sessionStorage.setItem('asedem-demo-session','active');
-  else {sessionStorage.removeItem('asedem-demo-session');sessionStorage.removeItem('duv-campus-demo');}
-  go(login?'directorio':'acceso');
+  if(!e.target.closest('[data-demo-logout]'))return;
+  demoSession=false;
+  sessionStorage.removeItem('asedem-demo-session');
+  sessionStorage.removeItem('duv-campus-demo');
+  go('acceso');
 });
 const privatePages=new Set(['directorio','grupos','iniciativas','perfil']);
-const pages={acceso:accessPage,socios:memberPage,directorio:directory,perfil:profilePage,grupos:groupPage,iniciativas:initiativePage};
+const pages={acceso:accessPage,login:loginPage,socios:memberPage,directorio:directory,perfil:profilePage,grupos:groupPage,iniciativas:initiativePage};
 function render(page){
   if(page==='campus'||(page==='mi-campus'&&demoSession)){
     const entry=document.querySelector(page==='campus'?'header .campus-entry':'aside .campus-entry');
@@ -110,7 +125,7 @@ function render(page){
   }
   const requested=Object.hasOwn(pages,page)?page:'acceso';
   const key=privatePages.has(requested)&&!demoSession?'acceso':requested;
-  document.querySelector('aside').hidden=!demoSession||key==='acceso';
+  document.querySelector('aside').hidden=!demoSession||key==='acceso'||key==='login';
   document.querySelector('#member-access').dataset.page=demoSession?'directorio':'acceso';
   pages[key]();
   document.querySelectorAll('[data-page]').forEach(b=>b.setAttribute('aria-current',String(b.dataset.page===key)));
