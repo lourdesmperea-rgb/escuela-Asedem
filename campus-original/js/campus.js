@@ -3,9 +3,21 @@
  const sessionKey='duv-campus-demo';
  let access=false;
  let requestedCampusPath;
- try{access=sessionStorage.getItem(sessionKey)==='1';}catch{}
+ const url=new URL(location.href);
+ const fromMemberArea=url.searchParams.get('acceso')==='socio';
+ try{
+  access=sessionStorage.getItem(sessionKey)==='1';
+  if(fromMemberArea&&sessionStorage.getItem('asedem-demo-session')==='active'){
+   access=true;
+   sessionStorage.setItem(sessionKey,'1');
+  }
+ }catch{}
+ if(fromMemberArea){
+  url.searchParams.delete('acceso');
+  history.replaceState(null,'',url);
+ }
  const $=selector=>document.querySelector(selector);
- const course=window.schoolData.courses.find(item=>item.detailExperience);
+ const course=window.campusCourse;
  const demoCourses=[
   {id:'bienestar',title:'Bienestar digital en el aula',progress:65,time:95,activities:4,result:83,next:'Actividad 5 · Analizar hábitos digitales'},
   {id:'convivencia',title:'Convivencia y prevención de violencias',progress:40,time:60,activities:2,result:75,next:'Unidad 3 · Acuerdos de convivencia'},
@@ -31,10 +43,6 @@
   location.hash=href;
  }
  const list=items=>`<ul>${items.map(item=>`<li>${item}</li>`).join('')}</ul>`;
- function identity(label,heading,body){
-  return `<div class="study-cover"><div><p class="eyebrow">Diálogo y entorno digital · ${label}</p>${heading}${body}</div><div class="resource-photo" aria-hidden="true">${window.schoolPhotos.image(course.photo)}</div></div>`;
- }
- // Available units supply their own renderer and completion criteria.
  const units=course.modules.map((module,index)=>({
   number:index+1,
   title:module.appliedTitle||module.title,
@@ -89,7 +97,7 @@
   <section class="white-panel study-panel"><h2>Qué aprenderás</h2><p>${course.description}</p><p><strong>Dirigido a.</strong> ${course.audience}</p>${list(course.objectives)}<h3>Resultados de aprendizaje</h3>${list(course.outcomes)}<a href="#/campus/materiales">Consultar materiales del curso →</a></section>`);
 
  }
- window.campusExperience={hasAccess:()=>access,requireDemoAccess(path){requestedCampusPath='#/'+path;location.replace('#/campus');},enterCourse:()=>enter(courseHref),render,identity,courseLayout,courseProgress,canOpen,unitFor:path=>units.find(unit=>unit.path===path),demoCourses,renderExample,courseTitle:course.title};
+ window.campusExperience={hasAccess:()=>access,requireDemoAccess(path){requestedCampusPath='#/'+path;location.replace('#/campus');},render,courseLayout,courseProgress,canOpen,unitFor:path=>units.find(unit=>unit.path===path),demoCourses,renderExample,courseTitle:course.title};
  document.addEventListener('click',event=>{
   const jump=event.target.closest('[data-study-jump]');
   if(jump){

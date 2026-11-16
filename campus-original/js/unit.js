@@ -1,7 +1,7 @@
 (() => {
  const panel = document.querySelector('#unidad');
  const stages = ['Situación inicial','Microcontenido','Caso con decisiones','Feedback','Aplicación práctica','Evaluación'];
- const unit = window.schoolData.courses.find(course=>course.detailExperience).modules[3];
+ const unit = window.campusCourse.modules[3];
  const title = unit.appliedTitle;
  const scene = 'Durante una actividad educativa con adolescentes, una persona cuenta que ha visto pornografía en internet y pregunta si las relaciones sexuales son como aparecen en esos vídeos. El grupo reacciona con risas y comentarios.';
  const criteria = [

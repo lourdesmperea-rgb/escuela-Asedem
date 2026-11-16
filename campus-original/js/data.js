@@ -1,10 +1,37 @@
-/* Content references are documented in README.md. Commercial terms are omitted. */
-window.schoolData = {
- courses: [
- {id:'educacion-afectiva-sexual',title:'Educación afectiva y sexual',audience:'Padres, madres y educadores',topic:'Educación afectiva y sexual',art:1,meta:'10 temas · Vídeos y anexos',description:'Pautas para acompañar la afectividad y la sexualidad desde las primeras etapas.',facts:['10 temas','10 vídeos de 10 minutos','Anexos complementarios'],objectives:['Comprender la afectividad y la sexualidad desde una perspectiva integral.','Desarrollar habilidades emocionales y sociales para un acompañamiento educativo cercano.','Conocer los riesgos de la pornografía y trabajar el uso de los dispositivos y las redes sociales.'],authors:'Blanca Elía · Isabel Santaballa · Jorge Gutiérrez',source:'https://www.daleunavuelta.org/curso-educacion-afectiva-y-sexual/',program:[['A. Sexualidad y afectividad',['Un concepto integral, que engloba las dimensiones del ser humano.','La sexualidad, placer y mucho más. ¿Un mundo hipersexual?']],['B. Etapas del desarrollo',['Mente, emociones y cuerpo.','Apego seguro, autoestima y aceptación de sí mismo.']],['C. Relaciones afectivas y habilidades sociales',['Sentimientos y emociones: qué me dicen y qué no me dicen.']],['D. Sexualidad e intimidad',['«Mi cuerpo es mío»: el abuso sexual infantil. El poder de la intimidad.','Despertar del deseo, curiosidad, identidad.']],['E. Pornografía: un reto educativo',['Impacto en los jóvenes. Aprendizaje de roles y datos globales.','Sexting, grooming, IA, videojuegos y situaciones de riesgo.']],['F. Una mirada positiva',['Heridas y crecimiento. Gestión del placer y del mundo digital.']]]},
- {id:'educacion-sexual-digital-educadores',title:'Adicción a la pornografía y educación sexual digital',audience:'Educadores',topic:'Pornografía y entorno digital',art:2,meta:'Online · A tu ritmo',description:'Formación para educadores y familias sobre sexualidad, entorno digital y prevención del consumo perjudicial de pornografía.',facts:['Más de 11 horas de vídeo','Acceso durante cuatro meses','Materiales PDF y tutoría'],source:'https://www.daleunavuelta.org/curso-educadores/',objectives:['Comprender los retos de la sexualidad en un entorno hiperconectado.','Conocer herramientas educativas de prevención y acompañamiento.','Explorar el papel de la familia y del centro educativo.'],program:[['01. Datos y contexto',['La nueva pornografía.','Impacto en percepciones y actitudes.']],['02. Sexualidad',['La ética de las relaciones sexuales.','La sexualidad y sus dimensiones.']],['03. Adicción y cerebro',['Los componentes de la adicción.','¿Cómo afecta la pornografía al cerebro?']],['04. Consecuencias',['Pornografía, mujer y violencia.','Sexualidad y pornografía.','Factores que influyen en los jóvenes.','Adolescentes en un mundo virtual.']],['05. Ayuda',['La fuerza del grupo.','Estrategias de salida para adultos y adolescentes.','Un proyecto de ayuda.']],['06. Internet',['Hipersexualización de la infancia.','Mis redes sociales, mi intimidad.','Hábitos digitales saludables.','Sexting y salud mental.']],['07. Educación',['Desde la educación primaria.','Acompañar en el ocio audiovisual.','Nunca es demasiado tarde.']],['08. Familia',['Educación sexual: primero tú.','Educar emociones, una gran pasión.','Familia, afectividad y sexualidad.','Señales de alerta y herramientas de ayuda.']]]},
- {id:'educacion-sexual-digital-salud',title:'Adicción a la pornografía y educación sexual digital',audience:'Profesionales de la salud',topic:'Pornografía y entorno digital',art:3,meta:'Online',description:'Versión dirigida a profesionales de la salud de la formación sobre adicción a la pornografía y educación sexual digital.',facts:['Versión para profesionales de la salud','Formación online'],source:'https://www.daleunavuelta.org/cursos/',objectives:[],program:[]}
- ],
- resources:[{title:'Adolescentes y pornografía',art:1},{title:'La importancia de responder a los adolescentes',art:5}],
- legacyModules:['Comprender el contexto y los retos educativos','Escucha, comunicación y acompañamiento','Prevención y actuación en contextos educativos','Recursos y aplicación práctica']
-};
+(() => {
+ 'use strict';
+ const example={
+ title:'Pornografía, adolescencia y educación sexual digital',
+ audience:'Profesionales de la educación y del ámbito socioeducativo, y familias con adolescentes',
+ description:'Una propuesta para comprender los mensajes sobre sexualidad en el entorno digital y diseñar respuestas educativas basadas en el diálogo, el pensamiento crítico y la prevención.',
+ objectives:['Comprender el entorno de socialización sexual digital de la adolescencia.','Explorar cómo abordar expectativas, consentimiento y límites desde la educación.','Desarrollar criterios para seleccionar recursos y preparar conversaciones educativas.'],
+ outcomes:['Distinguir mensajes del contenido pornográfico y contrastarlos con criterios de respeto, consentimiento y reciprocidad.','Elaborar un guion de conversación ajustado a un contexto familiar o educativo.','Analizar una situación ficticia y justificar una respuesta educativa sin recurrir al juicio ni al alarmismo.','Diseñar una actividad breve de alfabetización sexual digital con objetivos y recursos adecuados.'],
+ modules:[
+ {title:'Adolescencia y socialización digital',topics:['Preguntas y necesidades educativas en la adolescencia.','Agentes de socialización y fuentes de información sobre sexualidad.','Criterios para analizar contenidos y mensajes digitales.'],activity:'Mapa de fuentes: reconocer dónde se construyen las ideas sobre sexualidad.'},
+ {title:'Pornografía y expectativas sobre las relaciones',topics:['Representaciones, guiones y expectativas.','Lectura crítica de los mensajes, sin exposición a contenido explícito.','Diferencias entre representación, intimidad y relaciones compartidas.'],activity:'Análisis de un caso ficticio y contraste de sus expectativas.'},
+ {title:'Consentimiento, intimidad y convivencia',topics:['Respeto, reciprocidad y autonomía.','Límites personales y comunicación.','Privacidad y circulación de imágenes en contextos digitales.'],activity:'Propuesta de preguntas para trabajar límites y consentimiento.'},
+ {title:'Conversaciones que abren el diálogo',topics:['Escucha y preguntas abiertas.','Cómo responder desde el ámbito familiar y educativo.','Adaptación del lenguaje al contexto y a las necesidades del grupo.'],activity:'Diseño de un guion para una conversación educativa.'},
+ {title:'Del análisis a una propuesta educativa',topics:['Selección crítica de materiales.','Objetivos, secuencia y actividades de prevención.','Revisión de la propuesta y criterios de autoevaluación.'],activity:'Borrador de una actividad para el aula, un grupo o la familia.'}
+ ]
+ };
+ const descriptions=[
+ 'Explora dónde se forman las ideas sobre sexualidad durante la adolescencia.',
+ 'Analiza los guiones de una representación y las expectativas que pueden transmitir.',
+ 'Trabaja el acuerdo libre, los límites y la privacidad en situaciones educativas.',
+ 'Aplica los criterios de escucha, respeto y consentimiento a una pregunta en un grupo adolescente.',
+ 'Traslada lo aprendido al diseño y la revisión de una actividad educativa.'
+ ];
+ const outcomes=[
+ ['Identificar fuentes de información sobre sexualidad y justificar cómo valorar su fiabilidad.'],
+ ['Distinguir un mensaje representado de una expectativa trasladada a una relación.'],
+ ['Identificar señales de presión o falta de acuerdo y formular preguntas para abordar la situación.'],
+ ['Formular una primera respuesta que acoja la pregunta sin exponer a nadie.','Distinguir una representación de una relación basada en consentimiento y respeto.','Redactar una intervención educativa breve con una pregunta abierta y un ejemplo ficticio.'],
+ ['Diseñar una actividad breve y revisar si las instrucciones, recursos y evaluación responden a su objetivo.']
+ ];
+ example.modules.forEach((unit,index)=>{
+  unit.description=descriptions[index];
+  unit.outcomes=outcomes[index];
+ });
+ example.modules[3].appliedTitle='Cómo responder cuando aparece la pornografía en una conversación educativa';
+ window.campusCourse=example;
+})();

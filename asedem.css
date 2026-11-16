@@ -1,0 +1,59 @@
+*{box-sizing:border-box}body{margin:0;background:#faf8fc;color:#2e2239;font:16px 'DM Sans',sans-serif}header{background:white;border-bottom:1px solid #ebe4ef}header>div,.layout{max-width:1350px;margin:auto;padding:18px 38px;display:flex;gap:28px}header>div{align-items:center;justify-content:space-between}header img{width:54px;height:54px;object-fit:contain}.brand{display:flex;align-items:center;gap:12px}.brand strong{display:block;font:800 21px Manrope,sans-serif}small,.muted{color:#695c74}button,input,select,textarea,.campus-entry{font:inherit}button,.campus-entry{cursor:pointer;border:1px solid #e3d9e9;border-radius:10px;padding:10px 14px;background:white;color:#513463;font-weight:700}button:hover,.campus-entry:hover,button[aria-current=true]{background:#eee2f4}button.primary{color:white;background:#65387b;border-color:#65387b}button.primary:hover{background:#4f285f}nav{display:flex;gap:8px;flex-wrap:wrap}.layout{align-items:start;padding-top:30px}aside{width:200px;flex:none}aside nav{display:grid}aside button,aside .campus-entry{text-align:left;border-color:transparent;background:transparent}aside small{display:block;margin:10px 0 12px}main{flex:1;min-width:0}.hero{position:relative;overflow:hidden;background:#eee2f4;border-radius:24px;padding:35px 36px;margin-bottom:24px}.hero:after{content:'';position:absolute;right:-65px;top:-115px;width:290px;height:290px;border-radius:50%;border:32px solid #d9c0e5;box-shadow:0 0 0 25px #f5e9f2,inset 0 0 0 22px #f5e9f2;pointer-events:none}.hero>*{position:relative;z-index:1;max-width:74%}h1,h2,h3{font-family:Manrope,sans-serif;line-height:1.15;margin:0 0 10px}h1{font-size:clamp(27px,4vw,46px);letter-spacing:-.05em}p{line-height:1.55;margin:8px 0 16px}.panel,.card{background:white;border:1px solid #eae2ee;border-radius:16px;padding:20px}.panel{margin-bottom:18px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.filters{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:12px 0}label{display:grid;gap:6px;font-size:14px;font-weight:700}input,select,textarea{width:100%;min-width:0;background:white;color:inherit;border:1px solid #dcd0e3;border-radius:8px;padding:9px}.search{grid-column:1/-1}.avatar{display:grid;place-items:center;background:#ede0f3;color:#633477;border-radius:50%;width:49px;height:49px;font-weight:800;margin-bottom:12px}.card:nth-child(3n+2) .avatar{background:#fcecd8;color:#805021}.card:nth-child(3n) .avatar{background:#dfefe5;color:#245d3d}.chip{display:inline-block;background:#f3ecf7;border-radius:20px;padding:4px 9px;margin:3px 4px 5px 0;font-size:13px}.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.between{justify-content:space-between}.section{margin:20px 0 13px}.notice{background:#f7eddb;padding:11px 14px;border-radius:10px;margin:14px 0}.stack{display:grid;gap:13px}.stack button{justify-self:start}dialog{max-width:min(560px,92vw);width:100%;border:1px solid #e3d9e9;border-radius:18px;padding:23px;color:inherit}dialog::backdrop{background:#31243f77}footer{margin-top:24px;color:#695c74;font-size:13px}a{color:#65387b}:focus-visible{outline:3px solid #9161a6;outline-offset:2px}@media(max-width:930px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}aside{width:155px}}@media(max-width:680px){header>div,.layout{padding:13px 16px;gap:12px;flex-wrap:wrap}.layout{display:block}aside{width:auto;margin-bottom:16px}aside nav{display:flex}aside small{display:none}.hero{padding:24px 20px}.hero:after{opacity:.35}.hero>*{max-width:100%}.filters{grid-template-columns:repeat(2,minmax(0,1fr))}.grid{grid-template-columns:1fr}}
+
+/* The three accent colors used on ASEDEM's Congress page. */
+:root {
+  --plum: #593265;
+  --violet: #9b6aab;
+  --turquoise: #33c8b5;
+  --coral: #db7960;
+  --paper: #faf8f5;
+  --ink: #302438;
+  --line: #e6dce8;
+}
+body { background: var(--paper); color: var(--ink); }
+header { border-bottom: 1px solid var(--line); }
+header::before {
+  content: "";
+  display: block;
+  height: 5px;
+  background: linear-gradient(90deg, var(--violet) 0 38%, var(--turquoise) 38% 72%, var(--coral) 72%);
+}
+.brand strong { color: var(--plum); }
+.hero {
+  background: #eee3f0;
+  border: 1px solid #e3d3e7;
+  padding-block: 42px;
+}
+.hero h1 { color: var(--plum); }
+.hero p { margin-bottom: 0; }
+.hero::after {
+  right: -47px;
+  top: -104px;
+  border-color: var(--violet);
+  box-shadow: 0 0 0 24px var(--turquoise), inset 0 0 0 22px var(--coral);
+  opacity: .75;
+}
+.panel, .card { border-color: var(--line); }
+.panel { box-shadow: 0 8px 22px #59326509; }
+.card { border-top: 3px solid var(--violet); }
+.card:nth-child(3n+2) { border-top-color: var(--turquoise); }
+.card:nth-child(3n) { border-top-color: var(--coral); }
+.card:nth-child(3n+2) .avatar { background: #dff5ef; color: #215c53; }
+.card:nth-child(3n) .avatar { background: #fae7df; color: #773b30; }
+.chip { background: #edf6f3; color: #26544c; }
+button.primary { background: var(--plum); border-color: var(--plum); }
+button.primary:hover { background: #43254d; }
+button[aria-current="true"] { background: #eee3f0; color: var(--plum); }
+aside button[aria-current="true"] { border-left: 3px solid var(--violet); }
+@media (max-width: 900px) {
+  .hero::after { right: -160px; opacity: .45; }
+}
+@media (max-width: 680px) {
+  .hero { padding-block: 24px; }
+  .hero::after { display: none; }
+  aside button[aria-current="true"] { border-left: 1px solid var(--violet); }
+}
+.campus-entry{display:inline-block;text-decoration:none}
+aside[hidden]{display:none}
+.access-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:680px){.access-grid{grid-template-columns:1fr}}
