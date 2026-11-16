@@ -156,3 +156,12 @@ if(form.dataset.id===undefined){projects.push({...data,status:'En preparación'}
 const i=Number(form.dataset.id);projects[i]={...projects[i],...data};write('projects',projects);modal.close();render(location.hash.slice(1));
 });
 render(location.hash.slice(1));
+
+const siteHeader=document.querySelector('.asedem-header');
+function updateHeaderSize(){
+  const compact=siteHeader.classList.contains('is-compact');
+  siteHeader.classList.toggle('is-compact',window.scrollY>(compact?12:96));
+}
+window.addEventListener('scroll',updateHeaderSize,{passive:true});
+window.addEventListener('pageshow',updateHeaderSize);
+updateHeaderSize();
