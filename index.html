@@ -56,8 +56,8 @@ aside button[aria-current="true"] { border-left: 3px solid var(--violet); }
   aside button[aria-current="true"] { border-left: 1px solid var(--violet); }
 }
 </style>
-<header><div><div class="brand"><img src="logo.png" alt="Logotipo de ASEDEM"><div><strong>Escuela Asedem</strong><small>Asociación Española de Educación Emocional</small></div></div><nav aria-label="Espacios"><button data-page="directorio">Mi ASEDEM</button><button data-page="campus">Escuela y campus</button></nav></div></header>
-<div class="layout"><aside><small>ESPACIO DE SOCIAS Y SOCIOS</small><nav aria-label="Mi ASEDEM"><button data-page="directorio">Directorio profesional</button><button data-page="grupos">Grupos y territorios</button><button data-page="iniciativas">Iniciativas</button><button data-page="perfil">Mi perfil</button></nav></aside><main id="main"></main></div>
+<header><div><div class="brand"><img src="logo.png" alt="Logotipo de ASEDEM"><div><strong>Escuela Asedem</strong><small>Asociación Española de Educación Emocional</small></div></div><nav aria-label="Espacios"><button data-page="directorio">Mi ASEDEM</button><button data-page="campus">Escuela y campus</button><button data-page="socios">Hacerme socio/a</button></nav></div></header>
+<div class="layout"><aside><small>ESPACIO DE SOCIAS Y SOCIOS</small><nav aria-label="Mi ASEDEM"><button data-page="directorio">Directorio profesional</button><button data-page="grupos">Grupos y territorios</button><button data-page="iniciativas">Iniciativas</button><button data-page="perfil">Mi perfil</button><button data-page="socios">Alta y cuota anual</button></nav></aside><main id="main"></main></div>
 <dialog id="modal"></dialog>
 <script>
 const main=document.querySelector('main'), modal=document.querySelector('dialog');
@@ -108,7 +108,46 @@ const p=projects[i];showDialog('<h2>'+esc(p.title)+'</h2>'+chip(p.status)+'<form
 }
 function newProject(person='',group='Duelo'){showDialog('<h2>Abrir una colaboración</h2><form class="stack" id="project">'+input('title','Título')+area('goal','Objetivo')+select('group','Grupo temático',groups,group)+input('person','Persona de referencia',person)+input('step','Próximo paso')+input('date','Fecha prevista','','date')+area('notes','Acuerdos y materiales')+'<button class="primary">Crear iniciativa</button></form>')}
 function campus(){main.innerHTML=hero('Escuela y campus','Explora cómo una iniciativa de las personas socias puede convertirse en una formación.')+'<article class="panel"><h2>Acompañar el duelo en el aula</h2>'+chip('Taller de demostración')+chip('Profesorado')+'<p>Practica cómo iniciar una conversación y acordar apoyos con un alumno que ha sufrido una pérdida.</p>'+button(enrolled?'Abrir actividad':'Simular inscripción','data-enroll',true)+'</article>'+projects.filter(p=>p.status==='Aprobada'&&p.title!==sample.title).map(p=>'<article class="panel"><h3>'+esc(p.title)+'</h3>'+chip('Propuesta aprobada en la demo')+'<p>'+esc(p.goal)+'</p></article>').join('')+(enrolled?'<section class="panel" id="activity"><h2>Caso práctico</h2><p>Tras una pérdida familiar, un alumno regresa a clase. Se queda apartado durante una actividad. ¿Cómo iniciarías el acompañamiento?</p><div class="stack">'+button('Ofrecerle hablar en privado y preguntarle qué apoyo desea.','data-answer="privado"')+button('Pedirle que cuente al grupo lo ocurrido.','data-answer="grupo"')+'</div><p role="status">'+(answer==='privado'?'Una conversación privada protege su intimidad y le permite decidir qué compartir y cuándo.':answer==='grupo'?'Explicarlo ante el grupo puede hacer que se sienta expuesto. Ofrécele primero un espacio privado y escucha qué necesita.':'')+'</p><a href="pauta-aula.txt" download>Descargar pauta para el aula</a></section>':'')}
-const pages={directorio:directory,perfil:profilePage,grupos:groupPage,iniciativas:initiativePage,campus};
+
+let member=read('member',null), memberMessage='';
+function memberPage(){
+  const date=member?.renewal?new Intl.DateTimeFormat('es-ES',{dateStyle:'long',timeZone:'UTC'}).format(new Date(member.renewal)):null;
+  const due=date&&Date.now()>=Date.parse(member.renewal);
+  main.innerHTML=hero('Alta y cuota de socia o socio','Solicita el alta, consulta el estado de tu cuota anual y pide acceso al grupo de WhatsApp.')+
+  '<p class="notice">Demostración · Usa datos ficticios. El pago y la solicitud a WhatsApp se simulan.</p>'+
+  (member?'<section class="panel"><h2>Mi alta</h2><p>'+esc(member.name)+' · '+esc(member.email)+'</p><p>Cuota: <strong>'+(due?'Pendiente de renovación':date?'Al corriente':'Pendiente de pago')+'</strong></p>'+(date?'<p>Próxima renovación: '+date+'</p>':'')+
+  (date&&!due?'':button(due?'Simular renovación anual':'Simular pago de la cuota anual','data-member-pay',true))+'</section>':
+  '<form class="panel stack" id="member-form"><h2>Solicitar el alta</h2>'+input('name','Nombre y apellidos')+input('email','Correo electrónico','','email').replace('<input ','<input required ')+'<button class="primary">Guardar solicitud</button></form>')+
+  (date&&!due?'<section class="panel"><h2>Grupo de WhatsApp</h2><p>'+(member.whatsapp?'Solicitud de acceso simulada. Pendiente de aprobación.':'Tu cuota está al corriente. Ya puedes solicitar el acceso al grupo.')+'</p>'+(member.whatsapp?'':button('Simular solicitud de acceso','data-member-whatsapp',true))+'</section>':'')+
+  '<p role="status">'+esc(memberMessage)+'</p>';
+}
+document.addEventListener('submit',e=>{
+  if(e.target.id!=='member-form')return;
+  e.preventDefault();
+  const data=new FormData(e.target);
+  const name=data.get('name').trim();
+  if(!name){e.target.elements.name.focus();return}
+  member={name,email:data.get('email').trim(),renewal:null,whatsapp:false};
+  write('member',member);memberMessage='Solicitud guardada. Ya puedes simular el pago.';render('socios');
+});
+document.addEventListener('click',e=>{
+  const control=e.target.closest('[data-member-pay],[data-member-whatsapp]');
+  if(!control||!member)return;
+  const active=member.renewal&&Date.parse(member.renewal)>Date.now();
+  if(control.hasAttribute('data-member-pay')&&!active){
+    const next=new Date();
+    const month=next.getUTCMonth();
+    next.setUTCFullYear(next.getUTCFullYear()+1);
+    if(next.getUTCMonth()!==month)next.setUTCDate(0);
+    member.renewal=next.toISOString();
+    memberMessage='Pago simulado. Cuota al corriente.';
+  }
+  if(control.hasAttribute('data-member-whatsapp')&&active){
+    member.whatsapp=true;memberMessage='Solicitud de acceso simulada.';
+  }
+  write('member',member);render('socios');
+});
+const pages={socios:memberPage,directorio:directory,perfil:profilePage,grupos:groupPage,iniciativas:initiativePage,campus};
 function render(page){const key=Object.hasOwn(pages,page)?page:'directorio';pages[key]();document.querySelectorAll('[data-page]').forEach(b=>b.setAttribute('aria-current',String(b.dataset.page===key)));main.insertAdjacentHTML('beforeend',footer)}
 function go(page){if(location.hash==='#'+page)render(page);else location.hash=page}
 window.addEventListener('hashchange',()=>{render(location.hash.slice(1));window.scrollTo(0,0)});
